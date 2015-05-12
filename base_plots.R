@@ -14,4 +14,3 @@ with(airquality,{
         plot(Wind,Ozone,main="Ozone and wind")
         plot(Solar.R,Ozone,main="Ozone and Solar Radiation")
 })
-     
