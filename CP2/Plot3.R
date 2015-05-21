@@ -4,6 +4,9 @@
 ##           which of these four sources have seen decreases in emissions from 1999-2008 for Baltimore City? 
 ##           Which have seen increases in emissions from 1999-2008?
 
+## This is best shown by plotting annual totals for all 4 data sets on the same axes
+## with a linear regression line on each set to show either a rising or falling trend.
+
 ## The data is taken from the link provided on the Coursera EDA Project2 site.
 
 ## Plot file is plot3.png
@@ -18,8 +21,8 @@
 
 # (amend pathway as appropriate)
 
-        #setwd("C:/Users/Mike/Rspace/JHU_EDA/CP2") # home
-        setwd("H:/Rspace/JHU_Data_Science/JHU_EDA/CP2") # work
+        setwd("C:/Users/Mike/Rspace/JHU_EDA/CP2") # home
+        #setwd("H:/Rspace/JHU_Data_Science/JHU_EDA/CP2") # work
 
 
 ## Create rds file of NEI data and code files in ./data directory - or skip if already there.
@@ -90,7 +93,7 @@
 
 #open png device;create "plot3.png" in working directory
         
-        png("plot3.png")
+        png("plot3.png",height=480,width=580)
         
 #create plot and send to the file
 
@@ -98,9 +101,16 @@
 
         g <- ggplot(annual.BCtotals, aes(Year, Emissions,color=Type))+
                 geom_point(size=4)+
-                geom_smooth(aes(colour=Type),method="lm", se=FALSE)+
+                geom_smooth(aes(colour=Type),method="lm", se=FALSE)+ # add linear regression lines
+                theme(axis.text.x = element_text(size=14),
+                      axis.text.y=element_text(size=14))+
                 labs(x = "Year",y = "Annual Emissions (t)")+
-                labs(title = "Annual emission by type in Baltimore City")
+                theme(axis.title.x = element_text(size=14,vjust=-.5),
+                      axis.title.y=element_text(size=14,vjust=1.2))+
+                theme(legend.text=element_text(size=12),
+                      legend.title=element_text(size=12))+
+                labs(title = "Annual emissions by type in Baltimore City")+
+                theme(plot.title = element_text(size=14, face="bold", vjust=2, lineheight=.6))
         g
 # close the png file device
         

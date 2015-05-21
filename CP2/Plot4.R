@@ -94,7 +94,7 @@
         names(annual.Coaltotals)[names(annual.Coaltotals)=="Group.1"] <- "Year"
         names(annual.Coaltotals)[names(annual.Coaltotals)=="x"] <- "Emissions"
 
-# Convert annual totals to Mt
+# Convert annual totals to kt
         
         annual.Coaltotals$Emissions<-annual.Coaltotals$Emissions/1e3
         
@@ -110,10 +110,15 @@
 
         g <- ggplot(annual.Coaltotals, aes(Year, Emissions))+
                 geom_point(size=4)+
-                geom_smooth(method="lm", se=FALSE)+
-                scale_y_continuous(limits = c(0, max(annual.Coaltotals$Emissions)))+
+                geom_smooth(method="lm", se=FALSE)+ # add linear regression line
+                scale_y_continuous(limits = c(0, 800))+
+                theme(axis.text.x = element_text(size=14),
+                      axis.text.y=element_text(size=14))+
                 labs(x = "Year",y = "Annual Emissions (kt)")+
-                labs(title = "Annual US emissions from coal related combustion")
+                theme(axis.title.x = element_text(size=14,vjust=-.5),
+                      axis.title.y=element_text(size=14,vjust=1.2))+
+                labs(title = "Annual US emissions from coal related combustion")+
+                theme(plot.title = element_text(size=14, face="bold", vjust=2, lineheight=.6))
         g
 # close the png file device
         

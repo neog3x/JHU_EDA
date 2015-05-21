@@ -1,10 +1,18 @@
-## Plot 5
+## Plot 6
 
-## Question: How have emissions from motor vehicle sources changed from 1999-2008 in Baltimore City?
+## Question: Compare emissions from motor vehicle sources in Baltimore City with emissions from motor vehicle
+##           sources in Los Angeles County, California (fips == "06037"). Which city has seen greater changes
+##           over time in motor vehicle emissions?
+
+## Given the very different emissions levels in the two counties, we answer this by 
+## normalising the emissions of each place to their 1990 level (ie 1990 emissions=1)
+## then plotting the emissions relative to that on the same axes. Thus, if Los Angeles
+## emissions in 2000 had risen relative to their 1990 level, they would be plotted
+## with value 1.1 etc.
 
 ## The data is taken from the link provided on the Coursera EDA Project2 site.
 
-## Plot file is plot5.png
+## Plot file is plot6.png
 
 ## Author : Michael Hunt
 
@@ -73,47 +81,65 @@
 ## Process the data as necessary
         
 # We will define "motor vehicle" as being whatever is denoted by type "ON-ROAD" in the NEI data.
-# this seems reasonable given this explanation of the NEI data by the EPA
+# This seems reasonable given this explanation of the NEI data by the EPA
 # http://www.epa.gov/ttnchie1/net/2011inventory.html
         
-# Filter fromNEI the rows where $type is "ON-ROAD" AND where $fips = "24510" ie Baltimore City
+# Filter from NEI the rows where $type is "ON-ROAD" AND where $fips = "24510" ie Baltimore City
+# OR $fips = "06037" ie Los Angeles County.
              
-        mv.data<-NEI[NEI$type=="ON-ROAD" & NEI$fips=="24510",]
+        mv.data<-NEI[NEI$type=="ON-ROAD" & (NEI$fips=="24510" | NEI$fips=="06037"),]
         
 # Find annual emissions totals for motor vehicles from Baltimore.
         
-        mv.totals<-aggregate(mv.data$Emissions,by=list(mv.data$year),FUN="sum")
+        mv.totals<-aggregate(mv.data$Emissions,by=list(mv.data$year,mv.data$fips),FUN="sum")
         names(mv.totals)[names(mv.totals)=="Group.1"] <- "Year"
+        names(mv.totals)[names(mv.totals)=="Group.2"] <- "fips"
         names(mv.totals)[names(mv.totals)=="x"] <- "Emissions"
+        # add descriptive county names
+        mv.totals$County<-c(rep("Los Angeles",4),rep("Baltimore City",4))
 
-# Convert annual totals to Mt or kt etc, if necessary
+# Have a look at mv.totals
         
-        #mv.totals$Emissions<-mv.totals$Emissions/1e3 # 1e3 for kt, 1e6 for Mt
-        
-## Create plot5 in png file
+        mv.totals 
+         
+# The LA emissions levels are much greater than those of Baltimore City, so we normalise the emissions of
+# each city to better be able to make a comparison of trends from one year to the next.
 
-#open png device;create "plot5.png" in working directory
+# Divide all emissions by their 1999 levels.
         
-        png("plot5.png")
+        LA1999<-mv.totals$Emissions[mv.totals$Year==1999 & mv.totals$fips=="06037"]
+        BC1999<-mv.totals$Emissions[mv.totals$Year==1999 & mv.totals$fips=="24510"]
+        
+        mv.totals$Emissions[mv.totals$fips=="06037"]<-mv.totals$Emissions[mv.totals$fips=="06037"]/LA1999
+        mv.totals$Emissions[mv.totals$fips=="24510"]<-mv.totals$Emissions[mv.totals$fips=="24510"]/BC1999
+        
+## Create plot6 in png file
+
+#open png device;create "plot6.png" in working directory
+        
+        png("plot6.png",width = 580, height = 480)
         
 #create plot and send to the file
 
 ## Setup ggplot with data frame
 
-        g <- ggplot(mv.totals, aes(Year, Emissions))+
-                geom_point(size=4)+
-                geom_smooth(method="lm", se=FALSE)+ # add linear regression line
-                scale_y_continuous(limits = c(0, max(mv.totals$Emissions)))+
+        g <- ggplot(mv.totals, aes(Year, Emissions,color=County,shape=County))+
+                geom_point(size=4)+ 
+                scale_shape_manual(values=c(2,19)) +
+                geom_smooth(method="lm", se=FALSE)+ # add linear regression lines
+                scale_y_continuous(limits=c(0,1.2),breaks=seq(0,1.2,0.2))+
                 theme(axis.text.x = element_text(size=14),
                       axis.text.y=element_text(size=14))+
-                labs(x = "Year",y = "Annual Emissions (t)")+
+                labs(x = "Year",y = "Annual Emissions relative to 1990")+
                 theme(axis.title.x = element_text(size=14,vjust=-.5),
                       axis.title.y=element_text(size=14,vjust=1.2))+
-                ggtitle("Annual Baltimore emissions from motor vehicle usage")+
-                theme(plot.title = element_text(size=14, face="bold", vjust=2, lineheight=.6))
-        
-                #labs(title = "Annual Baltimore emissions from motor vehicle usage")
+                theme(legend.text=element_text(size=12),
+                      legend.title=element_text(size=12))+
+                ggtitle("Normalised annual emissions in Baltimore City and 
+                        \n Los Angeles County from motor vehicle usage")+
+                theme(plot.title = element_text(size=16, face="bold", vjust=2, lineheight=.6))
         g
+        
 # close the png file device
         
         dev.off() 

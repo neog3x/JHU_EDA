@@ -19,8 +19,8 @@
 
 # (amend pathway as appropriate)
 
-        #setwd("C:/Users/Mike/Rspace/JHU_EDA/CP2") # home
-        setwd("H:/Rspace/JHU_Data_Science/JHU_EDA/CP2") # work
+        setwd("C:/Users/Mike/Rspace/JHU_EDA/CP2") # home
+        #setwd("H:/Rspace/JHU_Data_Science/JHU_EDA/CP2") # work
 
 
 ## Create rds file of NEI data and code files in ./data directory - or skip if already there.
@@ -103,7 +103,7 @@ if(!file.exists("./data/summarySCC_PM25.rds")){
                      col="red",)
 )
 
-# add regression line
+# add linear regression line
 
         model <- lm(Emissions ~ Year, annual.BCtotals)
         abline(model, lwd = 1)
