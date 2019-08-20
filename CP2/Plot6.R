@@ -130,7 +130,7 @@
                 scale_y_continuous(limits=c(0,1.2),breaks=seq(0,1.2,0.2))+
                 theme(axis.text.x = element_text(size=14),
                       axis.text.y=element_text(size=14))+
-                labs(x = "Year",y = "Annual Emissions relative to 1990")+
+                labs(x = "Year",y = "Annual Emissions relative to 1999")+
                 theme(axis.title.x = element_text(size=14,vjust=-.5),
                       axis.title.y=element_text(size=14,vjust=1.2))+
                 theme(legend.text=element_text(size=12),
